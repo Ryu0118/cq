@@ -6,13 +6,17 @@ package enum CommandQueueError: Error, Equatable, Sendable, CustomStringConverti
     case nestedQueueInvocation
     /// The command matches a policy that forbids queue execution.
     case directOnly(command: String, pattern: String)
+    /// A direct-only rule already exists in the configuration.
+    case duplicateDirectOnlyPattern(String)
+    /// A direct-only rule could not be found in the configuration.
+    case directOnlyPatternNotFound(String)
     /// A policy pattern cannot be compiled.
     case invalidDirectOnlyPattern(pattern: String, reason: String)
 
     /// The process status appropriate for this error.
     package var exitStatus: Int32 {
         switch self {
-        case .emptyCommand, .nestedQueueInvocation, .directOnly:
+        case .emptyCommand, .nestedQueueInvocation, .directOnly, .duplicateDirectOnlyPattern, .directOnlyPatternNotFound:
             64
         case .invalidDirectOnlyPattern:
             78
@@ -28,6 +32,10 @@ package enum CommandQueueError: Error, Equatable, Sendable, CustomStringConverti
             "cq cannot be invoked from a command it already started"
         case let .directOnly(command, pattern):
             "command matches direct-only pattern \(pattern.debugDescription): \(command)"
+        case let .duplicateDirectOnlyPattern(pattern):
+            "direct-only pattern already exists: \(pattern.debugDescription)"
+        case let .directOnlyPatternNotFound(pattern):
+            "direct-only pattern not found: \(pattern.debugDescription)"
         case let .invalidDirectOnlyPattern(pattern, reason):
             "invalid direct-only regex \(pattern.debugDescription): \(reason)"
         }

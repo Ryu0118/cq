@@ -1,7 +1,7 @@
 # command-queue
 
-`command-queue` (`cq`) is a macOS Swift command proxy. `cq -- <command>
-[args...]` runs the executable directly while holding an exclusive `flock` on
+`command-queue` (`cq`) is a macOS Swift command proxy. `cq <command> [args...]`
+runs the executable directly while holding an exclusive `flock` on
 `/tmp/command-queue.lock`. The shared lock serializes cooperating `cq`
 processes across local user accounts on this machine. The child inherits the
 terminal streams and its exit status is returned by `cq`.
@@ -28,6 +28,17 @@ loads `$XDG_CONFIG_HOME/command-queue/config.json`, or
 Each regex is matched against the executable and its arguments joined with
 spaces. A match is rejected before the process waits for the machine lock.
 Nested `cq` invocations from a queued child are rejected to avoid deadlock.
+The file is optional and is created when a rule is first added. Manage rules
+with these commands; `remove-rule` uses an exact pattern string:
+
+```sh
+cq add-rule '^xcodebuild\s+archive(?:\s|$)'
+cq list-rules
+cq remove-rule '^xcodebuild\s+archive(?:\s|$)'
+```
+
+`--config <path>` overrides the default for both command execution and rule
+management.
 
 ## Package structure
 

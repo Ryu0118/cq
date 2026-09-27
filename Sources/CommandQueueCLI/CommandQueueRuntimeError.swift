@@ -6,6 +6,8 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
     case configurationNotFound(path: String)
     /// A configuration file could not be read or decoded.
     case configurationReadFailed(path: String, reason: String)
+    /// A configuration file could not be created or written.
+    case configurationWriteFailed(path: String, reason: String)
     /// The lock file could not be opened.
     case lockOpenFailed(path: String, reason: String)
     /// The process could not acquire or release the lock.
@@ -26,7 +28,7 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
         switch self {
         case .configurationNotFound, .configurationReadFailed, .missingHomeDirectory:
             78
-        case .lockOpenFailed, .lockOperationFailed:
+        case .configurationWriteFailed, .lockOpenFailed, .lockOperationFailed:
             73
         case .commandNotFound:
             127
@@ -46,6 +48,8 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
             "configuration file not found: \(path)"
         case let .configurationReadFailed(path, reason):
             "could not read configuration at \(path): \(reason)"
+        case let .configurationWriteFailed(path, reason):
+            "could not write configuration at \(path): \(reason)"
         case let .lockOpenFailed(path, reason):
             "could not open command queue lock at \(path): \(reason)"
         case let .lockOperationFailed(path, reason):

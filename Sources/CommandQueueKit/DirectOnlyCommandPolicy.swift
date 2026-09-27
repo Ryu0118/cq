@@ -19,26 +19,34 @@ package struct DirectOnlyCommandPolicy: Sendable {
         let range = NSRange(commandLine.startIndex..., in: commandLine)
 
         for pattern in patterns {
-            guard !pattern.isEmpty else {
-                throw CommandQueueError.invalidDirectOnlyPattern(
-                    pattern: pattern,
-                    reason: "the pattern must not be empty"
-                )
-            }
-
-            let expression: NSRegularExpression
-            do {
-                expression = try NSRegularExpression(pattern: pattern)
-            } catch {
-                throw CommandQueueError.invalidDirectOnlyPattern(
-                    pattern: pattern,
-                    reason: error.localizedDescription
-                )
-            }
+            let expression = try Self.regularExpression(for: pattern)
 
             if expression.firstMatch(in: commandLine, range: range) != nil {
                 throw CommandQueueError.directOnly(command: commandLine, pattern: pattern)
             }
+        }
+    }
+
+    /// Checks that a rule can be compiled as a regular expression.
+    package static func validate(pattern: String) throws {
+        _ = try regularExpression(for: pattern)
+    }
+
+    private static func regularExpression(for pattern: String) throws -> NSRegularExpression {
+        guard !pattern.isEmpty else {
+            throw CommandQueueError.invalidDirectOnlyPattern(
+                pattern: pattern,
+                reason: "the pattern must not be empty"
+            )
+        }
+
+        do {
+            return try NSRegularExpression(pattern: pattern)
+        } catch {
+            throw CommandQueueError.invalidDirectOnlyPattern(
+                pattern: pattern,
+                reason: error.localizedDescription
+            )
         }
     }
 }
