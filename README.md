@@ -7,21 +7,20 @@ must run directly.
 
 ## Installation
 
-Requires macOS 15 or later. After the first GitHub Release, install the latest
-release globally with [mise](https://mise.jdx.dev/):
+Requires macOS 15 or later. Install after the first GitHub Release is published.
+
+### Nest ([mtj0928/nest](https://github.com/mtj0928/nest))
 
 ```sh
-mise use -g 'github:Ryu0118/cq[asset_pattern=cq-{{ version }}-darwin-universal.tar.gz]'
+nest install Ryu0118/cq
 ```
 
-To build from source, install Swift 6 or later:
+Nest builds cq from source, so Swift 6 or later is required.
+
+### Mise ([jdx/mise](https://github.com/jdx/mise))
 
 ```sh
-git clone https://github.com/Ryu0118/cq.git
-cd cq
-swift build -c release
-mkdir -p "$HOME/.local/bin"
-cp .build/release/cq "$HOME/.local/bin/cq"
+mise use -g github:Ryu0118/cq
 ```
 
 ## Commands
