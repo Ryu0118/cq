@@ -1,0 +1,37 @@
+rules:
+- name: readme-package
+  sources:
+  - Package.swift
+  doc: README.md
+  message: Package.swift changed; review the user-facing package commands in README.md.
+  checksum: f0dc4c5611f7966036158538eeba1a71b409471328c11ec4654bc3bcd7e5cd5d
+- name: claude-package
+  sources:
+  - Package.swift
+  doc: CLAUDE.md
+  message: Package.swift changed; review the package architecture in CLAUDE.md.
+  checksum: f0dc4c5611f7966036158538eeba1a71b409471328c11ec4654bc3bcd7e5cd5d
+- name: claude-mise-tasks
+  sources:
+  - .mise.toml
+  doc: CLAUDE.md
+  message: .mise.toml changed; review the command list in CLAUDE.md.
+  checksum: 8a5f49d48c825eaf669db5bf49e5f2eeb0eaea78e16b3a3c2a1e01ccd660d54c
+- name: rules-lint-and-format
+  sources:
+  - .swiftformat
+  - .swiftlint.yml
+  - .my-swift-linter.yml
+  doc: .agents/rules/lint-and-format.md
+  message: A lint or format config changed; update .agents/rules/lint-and-format.md
+    to match.
+  checksum: 6c12ce88bd428bace2d2be5e55f02f78415daa6ba4ae16d796b3843e5437975e
+- name: rules-workflow
+  sources:
+  - .gitnagg.yml
+  - .githooks/pre-commit
+  - .githooks/pre-push
+  - scripts/lint-staged.sh
+  doc: .agents/rules/workflow.md
+  message: A commit gate or hook changed; update .agents/rules/workflow.md to match.
+  checksum: be6c0d95dfba25fad025fdfa4df30901190fc6f2ed2d1fbcb0fdeac8c2ebbcc4
