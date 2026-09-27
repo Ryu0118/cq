@@ -60,10 +60,14 @@ jobs:
         run: swift build -c release --arch arm64 --arch x86_64
 
       - name: Create Archive
+        id: archive
         run: |
-          cd .build/apple/Products/Release
+          RELEASE_DIR="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)"
+          cd "$RELEASE_DIR"
           tar -czvf "cq-${VERSION}-darwin-universal.tar.gz" cq
           shasum -a 256 "cq-${VERSION}-darwin-universal.tar.gz" > "cq-${VERSION}-darwin-universal.tar.gz.sha256"
+          echo "archive_path=$RELEASE_DIR/cq-${VERSION}-darwin-universal.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "checksum_path=$RELEASE_DIR/cq-${VERSION}-darwin-universal.tar.gz.sha256" >> "$GITHUB_OUTPUT"
         env:
 
           VERSION: ${{ inputs.version }}
@@ -74,8 +78,8 @@ jobs:
         with:
           name: CommandQueue-darwin-universal
           path: |
-            .build/apple/Products/Release/cq-${{ inputs.version }}-darwin-universal.tar.gz
-            .build/apple/Products/Release/cq-${{ inputs.version }}-darwin-universal.tar.gz.sha256
+            ${{ steps.archive.outputs.archive_path }}
+            ${{ steps.archive.outputs.checksum_path }}
           if-no-files-found: error
 
   # Version bump + push only after the build succeeds.
