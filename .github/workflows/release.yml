@@ -62,8 +62,8 @@ jobs:
       - name: Create Archive
         run: |
           cd .build/apple/Products/Release
-          tar -czvf "CommandQueue-${VERSION}-darwin-universal.tar.gz" CommandQueue
-          shasum -a 256 "CommandQueue-${VERSION}-darwin-universal.tar.gz" > "CommandQueue-${VERSION}-darwin-universal.tar.gz.sha256"
+          tar -czvf "cq-${VERSION}-darwin-universal.tar.gz" cq
+          shasum -a 256 "cq-${VERSION}-darwin-universal.tar.gz" > "cq-${VERSION}-darwin-universal.tar.gz.sha256"
         env:
 
           VERSION: ${{ inputs.version }}
@@ -74,8 +74,8 @@ jobs:
         with:
           name: CommandQueue-darwin-universal
           path: |
-            .build/apple/Products/Release/CommandQueue-${{ inputs.version }}-darwin-universal.tar.gz
-            .build/apple/Products/Release/CommandQueue-${{ inputs.version }}-darwin-universal.tar.gz.sha256
+            .build/apple/Products/Release/cq-${{ inputs.version }}-darwin-universal.tar.gz
+            .build/apple/Products/Release/cq-${{ inputs.version }}-darwin-universal.tar.gz.sha256
           if-no-files-found: error
 
   # Version bump + push only after the build succeeds.
