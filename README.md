@@ -23,24 +23,6 @@ Nest builds cq from source, so Swift 6 or later is required.
 mise use -g github:Ryu0118/cq
 ```
 
-## Commands
-
-```sh
-# Install development tools and configure Git hooks.
-mise run setup
-
-# Build and test.
-mise run build
-mise run test
-
-# Run all checks.
-mise run check
-
-# Run the executable.
-mise run run
-swift run cq --version
-```
-
 ## Quick start
 
 ```sh
