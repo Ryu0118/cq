@@ -18,10 +18,8 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
     case processSpawnFailed(command: String, reason: String)
     /// The child process could not be waited for.
     case processWaitFailed(command: String, reason: String)
-    /// A command attempted to invoke cq while it already holds the queue lock.
-    case nestedQueueInvocation
-    /// Live command services were not supplied to the CLI context.
-    case servicesUnavailable
+    /// A Kit runner was not supplied to the CLI context.
+    case runnerUnavailable
 
     /// The process status appropriate for this runtime error.
     package var exitStatus: Int32 {
@@ -34,9 +32,7 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
             127
         case .commandNotExecutable:
             126
-        case .nestedQueueInvocation:
-            64
-        case .processSpawnFailed, .processWaitFailed, .servicesUnavailable:
+        case .processSpawnFailed, .processWaitFailed, .runnerUnavailable:
             70
         }
     }
@@ -62,10 +58,8 @@ package enum CommandQueueRuntimeError: Error, Equatable, Sendable, CustomStringC
             "could not start \(command): \(reason)"
         case let .processWaitFailed(command, reason):
             "could not wait for \(command): \(reason)"
-        case .nestedQueueInvocation:
-            "cq cannot be invoked from a command it already started"
-        case .servicesUnavailable:
-            "command queue services are unavailable"
+        case .runnerUnavailable:
+            "command queue runner is unavailable"
         }
     }
 }

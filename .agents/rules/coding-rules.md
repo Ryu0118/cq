@@ -28,17 +28,22 @@ conventions live in `swift-coding.md`; lint-enforced details in `lint-and-format
 
 - `Sources/<Name>/` (executable) contains `@main` and composition only: build the live dependencies and hand control
   to the CLI target. No `ParsableCommand`s here.
-- `Sources/<Name>CLI/` (library) holds the ArgumentParser commands and the thin adapters to the outside world
-  (argument passthrough, `execv`, exit-status mapping, presenting results). It has its own `<Name>CLITests` target.
-- `Sources/<Name>Kit/` holds all use-case logic. It never parses `argv`, calls `exit`, prints, or reads
-  `ProcessInfo` / `FileManager.default` inside methods.
+- `Sources/<Name>CLI/` (library) holds the ArgumentParser commands and thin adapters to the outside world
+  (argument passthrough, process / filesystem adapters, exit-status mapping, presenting results). It has its own
+  `<Name>CLITests` target. CLI commands may translate parsed arguments into Kit requests, call one injected Runner,
+  and present its result; they must not implement or sequence use-case logic.
+- `Sources/<Name>Kit/` holds all use-case logic and workflow sequencing in Runners. It never parses `argv`, calls
+  `exit`, prints, or reads `ProcessInfo` / `FileManager.default` inside methods.
 - Dependencies point one way: executable → CLI → Kit.
 
 ## Commands are thin; Runners own the use case
 
-- A command does only: parse → validate (`validate()`, throwing `ValidationError` → exit 64) → build a Kit input
-  (`<UseCase>Request` or plain values) → construct **one** Kit Runner → present its outcome and map it to an exit
-  status. Branching policy, defaults, thresholds, error classification, and storage mutation belong in the Kit.
+- A command does only: parse and validate CLI syntax → build a Kit input (`<UseCase>Request` or plain values) → call
+  **one injected** Kit Runner → present its outcome and map it to an exit status. Branching policy, defaults,
+  thresholds, error classification, and storage mutation belong in the Kit.
+- Do not orchestrate use-case steps in a CLI command. A sequence such as loading policy → validating the request →
+  acquiring a lock → running a child process → releasing the lock belongs in the Kit Runner, even when the concrete
+  configuration, lock, and process adapters live in the CLI target.
 - One `package struct <UseCase>Runner: Sendable` per use case (`RunGoalRunner`, `DoctorRunner`, `ConfigRunner`).
   - Stored dependencies are `private let x: any P`; the initializer takes `some P` with the live implementation as
     the default argument.

@@ -20,53 +20,27 @@ package struct CommandQueueCommand: ContextualCommand {
 
     package init() {}
 
-    /// Preserves the no-argument starter behavior or executes a queued command.
+    /// Preserves the no-argument greeting or delegates one request to the Kit runner.
     package func run(context: CLIContext) async throws {
         guard !command.isEmpty else {
             context.output.standardOutput(CommandQueueKit.greeting())
             return
         }
 
-        if context.environment[CommandQueueRuntimeSettings.queueLockMarker] == "1" {
-            let error = CommandQueueRuntimeError.nestedQueueInvocation
-            context.output.standardError("cq: \(error)")
-            throw ExitCode(error.exitStatus)
-        }
-
-        guard let services = context.commandQueueServices else {
-            let error = CommandQueueRuntimeError.servicesUnavailable
+        guard let runner = context.commandQueueRunner else {
+            let error = CommandQueueRuntimeError.runnerUnavailable
             context.output.standardError("cq: \(error)")
             throw ExitCode(error.exitStatus)
         }
 
         do {
-            let settings = try services.configurationLoader.load(
-                configPath: configPath,
-                environment: context.environment
-            )
-            let request = CommandQueueRequest(
-                command: command,
-                lockFilePath: settings.lockFilePath,
-                directOnlyPatterns: settings.configuration.directOnlyPatterns
-            )
-            let lease = try services.runner.acquire(for: request)
-
-            var childStatus: Int32 = 0
-            var executionError: (any Error)?
-            do {
-                childStatus = try services.commandExecutor.run(
+            let childStatus = try runner.run(
+                CommandQueueRequest(
                     command: command,
-                    environment: context.environment,
-                    lockLease: lease
+                    configPath: configPath,
+                    environment: context.environment
                 )
-            } catch {
-                executionError = error
-            }
-            try lease.release()
-
-            if let executionError {
-                throw executionError
-            }
+            )
             if childStatus != 0 {
                 throw ExitCode(childStatus)
             }

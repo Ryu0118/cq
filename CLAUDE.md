@@ -32,8 +32,11 @@ Nested `cq` invocations from a queued child are rejected to avoid deadlock.
 ## Package structure
 
 - `CommandQueue` is the `@main` composition root.
-- `CommandQueueCLI` owns argument parsing and POSIX process/file-lock adapters.
-- `CommandQueueKit` contains reusable command policy and queue coordination.
+- `CommandQueueCLI` owns argument parsing, Kit request construction, POSIX adapters, and outcome presentation. It does
+  not sequence the command execution workflow.
+- `CommandQueueKit` owns command policy and complete queue workflow sequencing: loading configuration through a
+  protocol, checking policy, managing lock lifetime, and running the child through injected protocols. CLI supplies
+  the concrete file, lock, and process adapters.
 - Dependencies point inward: the executable may depend on CLI, and CLI may
   depend on Kit.
 

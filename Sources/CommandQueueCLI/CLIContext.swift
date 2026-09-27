@@ -8,27 +8,27 @@ package struct CLIContext: Sendable {
     package var output: CLIOutput
     /// The process environment.
     package var environment: [String: String]
-    /// Services available to execute a queued child command.
-    package var commandQueueServices: CommandQueueServices?
+    /// Kit use-case runner available to execute a queued command.
+    package var commandQueueRunner: CommandQueueRunner?
 
     /// The real process output and environment.
     package static var live: CLIContext {
         let environment = ProcessInfo.processInfo.environment
-        let services = CommandQueueServices(
-            runner: CommandQueueRunner(locking: PosixCommandQueueLocking()),
+        let runner = CommandQueueRunner(
             configurationLoader: JSONCommandQueueConfigurationLoader(),
+            locking: PosixCommandQueueLocking(),
             commandExecutor: PosixQueuedCommandExecutor()
         )
-        return CLIContext(output: .live, environment: environment, commandQueueServices: services)
+        return CLIContext(output: .live, environment: environment, commandQueueRunner: runner)
     }
 
     package init(
         output: CLIOutput,
         environment: [String: String],
-        commandQueueServices: CommandQueueServices? = nil
+        commandQueueRunner: CommandQueueRunner? = nil
     ) {
         self.output = output
         self.environment = environment
-        self.commandQueueServices = commandQueueServices
+        self.commandQueueRunner = commandQueueRunner
     }
 }

@@ -24,7 +24,7 @@ package struct PosixQueuedCommandExecutor: QueuedCommandExecuting {
         argumentVector.append(nil)
 
         var childEnvironment = environment
-        childEnvironment[CommandQueueRuntimeSettings.queueLockMarker] = "1"
+        childEnvironment[CommandQueueRunner.queueLockMarker] = "1"
         let environmentEntries = childEnvironment.keys.sorted().compactMap { key -> String? in
             guard let value = childEnvironment[key] else { return nil }
             return "\(key)=\(value)"

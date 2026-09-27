@@ -1,9 +1,5 @@
-import CommandQueueKit
-
-/// Resolved policy and lock path for one CLI invocation.
+/// Resolved policy and lock path for one queue request.
 package struct CommandQueueRuntimeSettings: Sendable {
-    /// Environment marker used to reject a nested cq invocation.
-    package static let queueLockMarker = "CQ_INTERNAL_QUEUE_LOCK_HELD"
     /// Stable lock file shared by every local account on this machine.
     package static let machineLockFilePath = "/tmp/command-queue.lock"
 

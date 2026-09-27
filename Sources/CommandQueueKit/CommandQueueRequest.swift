@@ -1,16 +1,16 @@
-/// Input needed to acquire the machine-local command queue.
+/// Input needed to run one command through the machine-local queue.
 package struct CommandQueueRequest: Sendable {
     /// Executable and arguments, as received from the command line.
     package let command: [String]
-    /// Path shared by all command-queue invocations on this machine.
-    package let lockFilePath: String
-    /// Policy patterns checked before waiting for the queue.
-    package let directOnlyPatterns: [String]
+    /// Optional path to a command policy file.
+    package let configPath: String?
+    /// Environment passed to configuration loading and the child process.
+    package let environment: [String: String]
 
-    /// Creates a queue request.
-    package init(command: [String], lockFilePath: String, directOnlyPatterns: [String]) {
+    /// Creates a command execution request.
+    package init(command: [String], configPath: String?, environment: [String: String]) {
         self.command = command
-        self.lockFilePath = lockFilePath
-        self.directOnlyPatterns = directOnlyPatterns
+        self.configPath = configPath
+        self.environment = environment
     }
 }
