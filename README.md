@@ -1,23 +1,43 @@
-# command-queue
+# 🚦 command-queue
 
-`command-queue` (`cq`) is a macOS command proxy and Swift package for running
-selected commands one at a time across all local user accounts. It starts the
-requested executable directly, holds a shared machine lock until that process
-exits, and returns the command's exit status.
+**Stop overlapping builds from competing for the same Mac.**
 
-## Usage
+`command-queue` (`cq`) is a macOS command proxy for developers who share build
+tools on one machine. Route commands through `cq` to make cooperating callers
+take turns; configure regex rules for commands that must run directly.
+
+## Features
+
+- 🔒 **Avoid resource conflicts** — queued callers take turns across local accounts.
+- 🚫 **Keep selected commands direct** — regex rules stop them from entering the queue.
+- ↪️ **Keep the familiar CLI experience** — terminal streams and exit status pass through.
+
+## Installation
+
+Requires macOS 15 or later and Swift 6 or later.
+
+```sh
+git clone git@github.com:Ryu0118/cq.git
+cd cq
+swift build -c release
+mkdir -p "$HOME/.local/bin"
+cp .build/release/cq "$HOME/.local/bin/cq"
+```
+
+## Quick start
 
 ```sh
 cq -- xcodebuild -project App.xcodeproj build
 cq -- swift build
 ```
 
-The `--` marks the beginning of the command and its arguments. `cq` does not
-invoke a shell; the child inherits the terminal's standard input, output, and
-error streams. Direct invocations such as `xcodebuild ...` bypass the queue.
+All callers must use `cq` to participate in serialization. Running a command
+directly bypasses the queue.
 
-Direct-only commands can be blocked from the proxy with regular expressions in
-the JSON configuration. The default path is
+## Direct-only commands
+
+Add regular expressions to the JSON configuration to reject matching commands
+before they enter the queue. The default path is
 `$XDG_CONFIG_HOME/command-queue/config.json`, or
 `~/.config/command-queue/config.json` when `XDG_CONFIG_HOME` is unset.
 
@@ -30,30 +50,23 @@ the JSON configuration. The default path is
 }
 ```
 
-Patterns are matched against the executable and arguments joined with spaces.
-Use anchors to limit a rule to the intended command. A rejected command exits
-with status 64 before it waits for the machine lock.
+Patterns match the executable and arguments joined with spaces. Use anchors to
+limit a rule to the intended command.
 
-The shared lock file is `/tmp/command-queue.lock`. `cq` leaves this file in
-place because unlinking it could let waiting processes lock a different file.
-All callers that need serialization must use `cq`; direct invocations do not
-participate in the lock.
-
-## Development setup
-
-Requirements: macOS 15 or later, Swift 6, and mise 2026.7.5 or later.
+## Command reference
 
 ```sh
-# Install/update project tools, configure Git hooks, and initialize docs.
-mise run setup
-
-# Build the executable.
-mise run build
-
-# Run the command-line entry point or inspect its options.
-mise run run
-swift run cq --help
+cq [--config <path>] -- <command> [args...]
+cq --help
+cq --version
 ```
 
-`CommandQueueCLI` owns command-line parsing and operating-system adapters;
-`CommandQueueKit` contains reusable policy and queue coordination logic.
+| Option | Description |
+|---|---|
+| `--config <path>` | Use a specific JSON policy file. |
+| `--help` | Show command usage. |
+| `--version` | Show the current version. |
+
+## License
+
+No license file is currently included.
