@@ -14,7 +14,24 @@ take turns; configure regex rules for commands that must run directly.
 
 ## Installation
 
-Requires macOS 15 or later and Swift 6 or later.
+Requires macOS 15 or later.
+
+### Install a release with mise
+
+Requires [mise](https://mise.jdx.dev/). Install the latest published release
+globally with:
+
+```sh
+mise use -g 'github:Ryu0118/cq[asset_pattern=cq-{{ version }}-darwin-universal.tar.gz]'
+```
+
+The release workflow publishes a universal macOS binary. There is no published
+release yet; this command will work after the first release is created from the
+GitHub Actions **Publish Release** workflow.
+
+### Build from source
+
+Requires Swift 6 or later.
 
 ```sh
 git clone git@github.com:Ryu0118/cq.git
