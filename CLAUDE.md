@@ -79,3 +79,7 @@ Read these before writing or reviewing code. They are the source of truth;
 
 Use `package` access for symbols shared within the package and `public` only
 for symbols consumed outside it.
+
+When documentation and the existing code disagree, follow the conventions used
+in the existing code, and in your final reply list every inconsistency you
+found between the documentation and the code.
